@@ -6,15 +6,7 @@ const Lista = ({ posts, termoAutor, termoConteudo }) => {
     );
     return filtro.map(post => <div key={post.id}>{post.autor}: {post.texto}</div>);
 }
-const Filtro = ({ termoState, setTermoState }) => {
-    return (
-        <input
-            placeholder="Filtrar por autor..."
-            value={termoState}
-            onChange={e => setTermoState(e.target.value)}
-        />
-    )
-}
+
 const FeedFiltravel = () => {
     const [termoAutor, setTermoAutor] = useState("");
     const [termoConteudo, setTermoConteudo] = useState("");

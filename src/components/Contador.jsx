@@ -10,7 +10,6 @@ const Contador = () => {
     }
     return (
         <div>
-            {/* Input para o usuário definir o passo */}
             <div>
                 <label>Passo: </label>
                 <input type="number" value={passo} onChange={e => setPasso(Number(e.target.value))}/>
