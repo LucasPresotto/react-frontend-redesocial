@@ -1,12 +1,15 @@
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Feed from './components/Feed.jsx';
 import UsuariosLogin from './pages/usuarios/UsuariosLogin.jsx';
 import UsuariosRegister from './pages/usuarios/UsuariosRegister.jsx';
 import Navbar from './components/Navbar.jsx';
 import { useCurrentUser } from './hooks/useCurrentUser.jsx';
+import Perfil from './pages/Perfil.jsx';
+import { ThemeProvider } from "./contexts/ThemeContext.jsx";
+import PainelDenuncias from './pages/PainelDenuncias.jsx';
 
 // Layout para rotas protegidas (com Navbar)
 const ProtectedLayout = () => {
@@ -33,11 +36,15 @@ const router = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
             { path: "/", element: <Feed /> },
-            // Você pode adicionar rotas de perfil, sobre, etc. aqui
+            { path: "/perfil/:id", element: <Perfil /> }, // Rota para ver perfil de outros
+            { path: "/meu-perfil", element: <Perfil /> }, // Rota para ver próprio perfil
+            { path: "/admin/denuncias", element: <PainelDenuncias /> },
         ]
     }
 ]);
 
 createRoot(document.getElementById('root')).render(
-    <RouterProvider router={router} />
+    <ThemeProvider> 
+        <RouterProvider router={router} />
+    </ThemeProvider>
 )
