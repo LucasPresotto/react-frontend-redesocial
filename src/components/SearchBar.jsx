@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuthFetch } from "../hooks/useAuthFetch";
+import { CiSearch } from "react-icons/ci";
 
 const SearchBar = () => {
     const [query, setQuery] = useState("");
@@ -17,7 +18,7 @@ const SearchBar = () => {
                 const res = await authFetch(`http://localhost:3000/api/usuarios/search?q=${query}`);
                 if (res.ok) setResultados(await res.json());
             } catch (err) { console.error(err); }
-        }, 300); // Delay para não fazer request a cada tecla
+        }, 300); 
 
         return () => clearTimeout(delayDebounceFn);
     }, [query]);

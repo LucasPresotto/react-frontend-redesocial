@@ -1,32 +1,31 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthFetch } from "../hooks/useAuthFetch";
-import { useCurrentUser } from "../hooks/useCurrentUser";
-import Post from "../components/Post";
-import EditarPerfilModal from "../components/EditarPerfilModal";
-import ListaUsuariosModal from "../components/ListaUsuariosModal";
+import { useAuthFetch } from "../../hooks/useAuthFetch";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
+import Post from "../../components/posts/Post";
+import EditarPerfilModal from "../../components/usuarios/EditarPerfilModal";
+import ListaUsuariosModal from "../../components/usuarios/ListaUsuariosModal";
 import { useNavigate } from "react-router-dom";
-import DenunciaModal from "../components/DenunciaModal";
+import DenunciaModal from "../../components/DenunciaModal";
 
 const Perfil = () => {
-    const { id } = useParams(); // ID do usuário sendo visitado
+    const { id } = useParams(); 
     const userLogado = useCurrentUser()();
     const authFetch = useAuthFetch();
     
     const [perfil, setPerfil] = useState(null);
     const [posts, setPosts] = useState([]);
-    const [filtro, setFiltro] = useState("todos"); // 'todos', 'midia', 'curtidas'
+    const [filtro, setFiltro] = useState("todos"); 
     const [seguindo, setSeguindo] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
     const [showLista, setShowLista] = useState(false); 
-    const [tipoLista, setTipoLista] = useState(""); // 'Seguidores' ou 'Seguindo'
-    const [usuariosLista, setUsuariosLista] = useState([]); // Dados da lista
+    const [tipoLista, setTipoLista] = useState(""); 
+    const [usuariosLista, setUsuariosLista] = useState([]); 
     const [showDenuncia, setShowDenuncia] = useState(false);
 
-    const usuarioId = id || userLogado?.sub; // Se não tiver ID na URL, é meu perfil
+    const usuarioId = id || userLogado?.sub; 
     const navigate = useNavigate();
 
-    // Carregar dados do Perfil
     useEffect(() => {
         async function loadPerfil() {
             try {
@@ -35,16 +34,12 @@ const Perfil = () => {
                     const data = await res.json();
                     setPerfil(data);
                     
-                    // Verifica se já sigo este usuário (lógica simples baseada no botão de seguir, 
-                    // idealmente o backend retornaria "seguido_por_mim" boolean, mas podemos checar na lista de quem sigo)
-                    // Para simplificar, assumimos false e deixamos o usuário clicar se quiser seguir.
                 }
             } catch (err) { console.error(err); }
         }
         loadPerfil();
     }, [usuarioId]);
 
-    // Carregar Posts com Filtros
     useEffect(() => {
         async function loadPosts() {
             let url = `http://localhost:3000/api/posts?`;
@@ -65,13 +60,11 @@ const Perfil = () => {
     }, [usuarioId, filtro]);
 
     const handleFollow = async () => {
-        // Lógica de seguir (toggle)
         const url = `http://localhost:3000/api/seguidores/${usuarioId}`;
         const method = seguindo ? "DELETE" : "POST";
         const res = await authFetch(url, { method });
         if(res.ok) {
             setSeguindo(!seguindo);
-            // Atualiza contadores visualmente
             setPerfil(prev => ({
                 ...prev,
                 total_seguidores: seguindo ? prev.total_seguidores - 1 : prev.total_seguidores + 1
@@ -80,9 +73,6 @@ const Perfil = () => {
     };
 
     const abrirLista = async (tipo) => {
-        // Tipo: "seguidores" ou "seguindo"
-        // Endpoint correspondente: /api/seguidores/:id/seguidores ou /api/seguidores/:id/seguindo
-        
         try {
             const res = await authFetch(`http://localhost:3000/api/seguidores/${usuarioId}/${tipo}`);
             if (res.ok) {
@@ -104,7 +94,7 @@ const Perfil = () => {
             });
             if (res.ok) {
                 alert("Usuário banido/excluído com sucesso.");
-                navigate("/"); // Volta para a home
+                navigate("/"); 
             } else {
                 alert("Erro ao excluir usuário.");
             }
@@ -121,13 +111,10 @@ const Perfil = () => {
     return (
         <div className="min-vh-100 pb-5">
             <div className="container mt-4" style={{maxWidth: "600px"}}>
-                {/* Header Perfil */}
                 <div className="card border-0 shadow-sm mb-3">
-                    {/* Capa (Opcional, usando cor sólida por enquanto) */}
                     <div style={{height: "150px", backgroundColor: "#cfd9de"}}></div>
                     
                     <div className="px-3 pb-3 position-relative">
-                        {/* Foto de Perfil sobrepondo a capa */}
                         <img 
                             src={perfil.url_perfil_foto || "https://placehold.co/120"} 
                             className="rounded-circle border border-4 border-body position-absolute"
@@ -135,7 +122,6 @@ const Perfil = () => {
                             style={{top: "-60px", objectFit: 'cover'}}
                         />
                         
-                        {/* Botão de Ação (Direita) */}
                         <div className="d-flex justify-content-end mt-3" style={{height: "40px"}}>
                             {isMeuPerfil ? (
                                 <button className="btn btn-outline-body rounded-pill fw-bold border" onClick={() => setShowEdit(true)}>
@@ -171,7 +157,6 @@ const Perfil = () => {
                             )}
                         </div>
 
-                        {/* Informações de Texto */}
                         <div className="mt-3">
                             <h4 className="fw-bold mb-0">{perfil.nome}</h4>
                             <div className="text-muted">@{perfil.usuario}</div>
@@ -196,7 +181,6 @@ const Perfil = () => {
                     </div>
                 </div>
 
-                {/* Navegação de Abas */}
                 <ul className="nav nav-pills nav-fill mb-3 bg-body p-2 rounded shadow-sm">
                     <li className="nav-item">
                         <button className={`nav-link rounded-pill ${filtro === 'todos' ? 'active bg-primary text-white' : 'text-body'}`} onClick={() => setFiltro('todos')}>Posts</button>
@@ -209,7 +193,6 @@ const Perfil = () => {
                     </li>
                 </ul>
 
-                {/* Feed do Perfil */}
                 <div>
                     {posts.length === 0 ? (
                         <div className="text-center py-5 text-muted">Nada para ver aqui ainda.</div>
@@ -226,7 +209,6 @@ const Perfil = () => {
                 </div>
             </div>
 
-            {/* Modal de Edição */}
             {isMeuPerfil && (
                 <EditarPerfilModal 
                     show={showEdit} 
@@ -236,7 +218,6 @@ const Perfil = () => {
                 />
             )}
 
-            {/* --- MODAL DE LISTA DE USUÁRIOS --- */}
             <ListaUsuariosModal 
                 show={showLista} 
                 handleClose={() => setShowLista(false)} 

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useAuthFetch } from "../hooks/useAuthFetch";
+import { useAuthFetch } from "../../hooks/useAuthFetch";
+import Toast from "../../components/Toast";
 
 const NovoPost = ({ onPostCreated }) => {
     const [texto, setTexto] = useState("");
     const [arquivo, setArquivo] = useState(null);
+    const [toastInfo, setToastInfo] = useState(null);
     const authFetch = useAuthFetch();
 
     const handleSubmit = async (e) => {
@@ -12,14 +14,12 @@ const NovoPost = ({ onPostCreated }) => {
 
         const formData = new FormData();
         formData.append("conteudo", texto);
-        // Lógica simples: se tem arquivo, é tipo 1 (imagem), senão tipo 0 (texto)
-        // (Seu backend exige tipo 1 ou 2 para uploads. Vamos assumir 1 para simplificar ou 0 texto)
-        let tipo = 0; // Texto puro
+        let tipo = 0; 
         if (arquivo) {
             if (arquivo.type.startsWith('image/')) {
-                tipo = 1; // Imagem
+                tipo = 1; 
             } else if (arquivo.type.startsWith('video/')) {
-                tipo = 2; // Vídeo
+                tipo = 2;
             } else {
                 alert("Formato de arquivo não suportado.");
                 return;
@@ -32,24 +32,33 @@ const NovoPost = ({ onPostCreated }) => {
         try {
             const res = await authFetch("http://localhost:3000/api/posts", {
                 method: "POST",
-                body: formData, // fetch detecta FormData e ajusta headers
+                body: formData, 
             });
             if (res.ok) {
                 setTexto("");
                 setArquivo(null);
                 e.target.reset();
-                if (onPostCreated) onPostCreated(); // Recarrega o feed
+                if (onPostCreated) onPostCreated(); 
+                setToastInfo({ msg: "Post criado com sucesso!", type: "success" });
             } else {
-                alert("Erro ao publicar");
+                const data = await res.json().catch(() => ({}));
+                setToastInfo({ msg: data.erro || "Erro ao publicar", type: "danger" });
             }
         } catch (error) {
             console.error(error);
-            alert("Erro na comunicação com o servidor.");
+            setToastInfo({ msg: "Erro de comunicação com o servidor.", type: "danger" });
         }
     };
 
     return (
         <div className="card mb-4 p-3">
+            {toastInfo && (
+                <Toast 
+                    message={toastInfo.msg} 
+                    type={toastInfo.type} 
+                    onClose={() => setToastInfo(null)} 
+                />
+            )}
             <form onSubmit={handleSubmit}>
                 <textarea 
                     className="form-control mb-2 border-0 bg-body" 
@@ -63,7 +72,7 @@ const NovoPost = ({ onPostCreated }) => {
                     <input 
                         type="file" 
                         className="form-control form-control-sm w-50" 
-                        accept="image/*,video/*" // <--- PERMITE VÍDEOS AGORA
+                        accept="image/*,video/*" 
                         onChange={e => setArquivo(e.target.files[0])}
                     />
                     <button type="submit" className="btn btn-primary rounded-pill px-4 fw-bold">

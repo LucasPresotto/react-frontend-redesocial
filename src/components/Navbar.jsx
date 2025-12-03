@@ -5,13 +5,18 @@ import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useAuthFetch } from "../hooks/useAuthFetch";
 import SearchBar from "./SearchBar";
 import { useTheme } from "../contexts/ThemeContext";
+import { useAuth } from "../hooks/AuthContext";
+import logo from "../assets/logo.png";
+import { SlHome } from "react-icons/sl";
+import { IoMdMenu } from "react-icons/io";
+import { FaRegUser } from "react-icons/fa6";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Navbar = () => {
-    const getUser = useCurrentUser();
-    const user = getUser();
     const authFetch = useAuthFetch();
     const navigate = useNavigate();
     const { theme, toggleTheme } = useTheme();
+    const { user, logout } = useAuth();
 
     const [showMenu, setShowMenu] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -19,7 +24,7 @@ const Navbar = () => {
     const handleLogout = async () => {
         try {
             await authFetch("http://localhost:3000/api/usuarios/logout", { method: "POST" });
-            sessionStorage.removeItem("at");
+            logout();
             navigate("/usuarios/login");
         } catch (error) {
             console.error(error);
@@ -45,46 +50,47 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className={`navbar navbar-expand-lg border-bottom sticky-top ${theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-white'}`}>
+            <nav className={`navbar navbar-expand-lg border-bottom sticky-top ${theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-body'}`} style={{ zIndex: 1050 }}>
                 <div className="container-fluid px-3">
                     
-                    {/* LADO ESQUERDO: Menu + Logo + Busca */}
                     <div className="d-flex align-items-center gap-3" style={{ flex: 1 }}>
-                        {/* Botão do Menu (Hambúrguer) */}
                         <button className="btn btn-link text-decoration-none fs-4 p-0 text-reset" onClick={() => setShowMenu(true)}>
-                            ☰
+                            <IoMdMenu size={28} /> 
                         </button>
 
-                        {/* Nome da Rede */}
-                        <Link className="navbar-brand fw-bold text-primary m-0" to="/">wYZe</Link>
+                        <Link className="navbar-brand m-0 d-flex align-items-center" to="/">
+                            <img src={logo} alt="wYZe" height="33" /> 
+                        </Link>
 
                         
                     </div>
 
-                    {/* CENTRO: Olá Usuário */}
-                    <div className="position-absolute start-50 translate-middle-x fw-bold d-none d-sm-block">
-                        👋 Olá, {user.nome?.split(" ")[0]}
+                    <div className="position-absolute start-50 translate-middle-x d-none d-sm-block">
+                        <Link 
+                            to={`/perfil/${user.sub}`} 
+                            className="text-decoration-none fw-bold text-body"
+                            title="Ir para meu perfil"
+                        >
+                            👋 Olá, {user.nome?.split(" ")[0]}
+                        </Link>
                     </div>
 
-                    {/* Barra de Pesquisa (Visível em telas médias/grandes) */}
                         <div className="d-none d-md-block" style={{ maxWidth: "300px", width: "100%" }}>
                             <SearchBar />
                         </div>
                 </div>
             </nav>
 
-            {/* --- MENU LATERAL (OFFCANVAS) --- */}
-            <Offcanvas show={showMenu} onHide={() => setShowMenu(false)} placement="start">
+            <Offcanvas show={showMenu} onHide={() => setShowMenu(false)} placement="start" style={{ zIndex: 1050 }}>
                 <Offcanvas.Header closeButton>
                     <Offcanvas.Title className="fw-bold text-primary">Menu</Offcanvas.Title>
-                    {/* Alternar Tema */}
                     <div className="d-flex justify-content-end" style={{ flex: 1 }}>
                         <div className="d-flex align-items-center justify-content-between px-1">
                             <span className="fw-bold text-secondary"></span>
                             <button 
                                 className="btn rounded-circle d-flex align-items-center justify-content-center border-2" 
                                 onClick={toggleTheme}
-                                style={{ width: "45px", height: "45px" }} // Tamanho fixo para garantir que seja um círculo
+                                style={{ width: "45px", height: "45px" }} 
                                 title={theme === 'light' ? 'Ativar Modo Escuro' : 'Ativar Modo Claro'}
                             >
                                 <span style={{ fontSize: "1.2rem" }}>
@@ -96,14 +102,18 @@ const Navbar = () => {
                 </Offcanvas.Header>
                 <Offcanvas.Body className="d-flex flex-column gap-2">
                     
-                    {/* Navegação */}
                     <Link to="/" className="btn btn-outline-secondary text-start border-0" onClick={() => setShowMenu(false)}>
-                        🏠 Home
+                        <SlHome   className="me-2" /> Home
                     </Link>
                     
                     <Link to={`/perfil/${user.sub}`} className="btn btn-outline-secondary text-start border-0" onClick={() => setShowMenu(false)}>
-                        👤 Perfil
+                        <FaRegUser  className="me-2"/> Perfil
                     </Link>
+
+                    <div className="mb-3">
+                        <SearchBar />
+                    </div>
+
                     {user?.papel === 1 && (
                         <Link to="/admin/denuncias" className="btn btn-outline-secondary text-start border-0 mb-2" onClick={() => setShowMenu(false)}>
                             🚨 Painel de Denúncias
@@ -111,25 +121,20 @@ const Navbar = () => {
                     )}
 
                     <hr />
-
-                    {/* Ações da Conta */}
                     <div className="mt-auto d-flex flex-column gap-2">
                         
 
-                        {/* Logout */}
                         <button className="btn btn-dark" onClick={handleLogout}>
                             Sair da Conta
                         </button>
 
-                        {/* Excluir Conta */}
                         <button className="btn btn-danger mt-3" onClick={() => { setShowMenu(false); setShowDeleteConfirm(true); }}>
-                            🗑️ Excluir Conta
+                            <RiDeleteBin6Line className="me-2"/> Excluir Conta
                         </button>
                     </div>
                 </Offcanvas.Body>
             </Offcanvas>
 
-            {/* Modal de Confirmação de Exclusão */}
             <Modal show={showDeleteConfirm} onHide={() => setShowDeleteConfirm(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Excluir Conta</Modal.Title>

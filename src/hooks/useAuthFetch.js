@@ -8,8 +8,6 @@ export const useAuthFetch = () => {
         const headers = new Headers(originalHeaders || {});
         const accessToken = sessionStorage.getItem("at");
 
-        // Se o body for FormData, NÃO podemos setar Content-Type (o navegador faz isso)
-        // Se não for, e não tiver setado, assumimos JSON
         if (!(fetchOptions.body instanceof FormData) && !headers.has("Content-Type")) {
              headers.set("Content-Type", "application/json");
         }
@@ -24,7 +22,6 @@ export const useAuthFetch = () => {
 
         if (res.status !== 401) return res;
 
-        // Tenta renovar o token
         const refreshRes = await fetch("http://localhost:3000/api/usuarios/refresh", {
             method: "POST",
             credentials: "include",

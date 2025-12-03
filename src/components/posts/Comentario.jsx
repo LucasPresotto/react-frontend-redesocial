@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useCurrentUser } from "../hooks/useCurrentUser";
-import { useAuthFetch } from "../hooks/useAuthFetch";
-import DenunciaModal from "./DenunciaModal";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { useAuthFetch } from "../../hooks/useAuthFetch";
+import DenunciaModal from "../DenunciaModal";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 const Comentario = ({ comentario, onDelete }) => {
     const user = useCurrentUser()();
@@ -17,7 +18,7 @@ const Comentario = ({ comentario, onDelete }) => {
 
     const handleUpdate = async () => {
         const res = await authFetch(`http://localhost:3000/api/comentarios/${comentario.id}`, {
-            method: "PUT", // ou PATCH, dependendo da sua rota
+            method: "PUT", 
             body: JSON.stringify({ conteudo: texto })
         });
         if (res.ok) setEditando(false);
@@ -95,7 +96,7 @@ const Comentario = ({ comentario, onDelete }) => {
                         onClick={toggleLike}
                         style={{fontSize: "0.85rem"}}
                     >
-                        {curtido ? '❤️' : '🤍'} <span>{likes || "0"}</span>
+                        {curtido ? <FaHeart /> : <FaRegHeart />} <span>{likes || "0"}</span>
                     </button>
                 </div>
             </div>

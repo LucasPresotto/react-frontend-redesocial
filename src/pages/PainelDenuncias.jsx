@@ -18,7 +18,6 @@ const PainelDenuncias = () => {
         carregarDenuncias();
     }, []);
 
-    // Ação: Deletar o CONTEÚDO (Post, Comentário ou Usuário)
     const handlePunir = async (d) => {
         if (!confirm("Tem certeza? Isso apagará o conteúdo denunciado.")) return;
         
@@ -34,13 +33,11 @@ const PainelDenuncias = () => {
                 setDenuncias(denuncias.filter(x => x.id !== d.id));
             } else {
                 alert("Erro ao remover conteúdo (talvez já tenha sido apagado).");
-                // Se falhar, talvez o conteúdo não exista mais, então vamos limpar a denúncia
                 handleDescartar(d.id);
             }
         } catch (err) { console.error(err); }
     };
 
-    // Ação: Ignorar a denúncia (apaga apenas o registro da denúncia)
     const handleDescartar = async (id) => {
         if (!confirm("Descartar esta denúncia?")) return;
         try {
@@ -72,7 +69,6 @@ const PainelDenuncias = () => {
                                 
                                 <p className="mb-2"><strong>Motivo:</strong> {d.motivo}</p>
                                 
-                                {/* Mostra o conteúdo denunciado para análise */}
                                 <div className="bg-body p-2 rounded border mb-3">
                                     {d.target_post_id && (
                                         <div>

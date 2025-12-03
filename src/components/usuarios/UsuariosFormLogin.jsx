@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.png";
+import { useAuth } from "../../hooks/AuthContext";
 
-const UsuariosFormLogin = () => {
+const UsuariosFormLogin = ({ setToastInfo }) => {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
-    const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
         try {
             const res = await fetch("http://localhost:3000/api/usuarios/login", {
                 method: "POST",
@@ -20,17 +21,20 @@ const UsuariosFormLogin = () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data.erro || "Erro no login");
 
-            sessionStorage.setItem("at", data.access_token);
-            navigate("/"); // Vai para o Feed
+            login(data.access_token);
+
+            navigate("/");
         } catch (err) {
-            setError(err.message);
+            setToastInfo({ msg: err.message, type: "danger" });
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="card p-4" style={{ maxWidth: "400px", margin: "0 auto" }}>
+            <div className="text-center mb-4">
+                <img src={logo} alt="wYZe" height="60" />
+            </div>
             <h3 className="text-center mb-3">Login</h3>
-            {error && <div className="alert alert-danger">{error}</div>}
             <div className="mb-3">
                 <label>Email</label>
                 <input type="email" className="form-control" value={email} onChange={e => setEmail(e.target.value)} required />

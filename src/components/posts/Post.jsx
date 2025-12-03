@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAuthFetch } from "../hooks/useAuthFetch";
-import { useCurrentUser } from "../hooks/useCurrentUser";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthFetch } from "../../hooks/useAuthFetch";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
 import Comentario from "./Comentario";
-import DenunciaModal from "./DenunciaModal";
+import DenunciaModal from "../DenunciaModal";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
-const Post = ({ post, onDelete, onUpdate }) => {
+const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
     const user = useCurrentUser()();
     const authFetch = useAuthFetch();
+    const navigate = useNavigate();
     
     const [likes, setLikes] = useState(post.total_likes);
     const [curtido, setCurtido] = useState(post.curtido_por_mim);
@@ -52,7 +54,6 @@ const Post = ({ post, onDelete, onUpdate }) => {
 
         if(res.ok) {
             const novo = await res.json();
-            // Adiciona dados mockados do autor para exibir instantaneamente sem reload
             novo.autor_nome = user.nome; 
             novo.autor_usuario = user.usuario;
             novo.autor_foto = user.url_perfil_foto;
@@ -81,8 +82,19 @@ const Post = ({ post, onDelete, onUpdate }) => {
         if (res.ok) onDelete(post.id);
     };
 
+    const goToPost = (e) => {
+        if (isFullPage || e.target.closest("a, button, input, textarea")) return;
+        navigate(`/posts/${post.id}`);
+    };
+
+    const dataFormatada = new Date(post.data_criacao).toLocaleString('pt-BR', {
+        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+    });
+
     return (
-        <article className="card mb-3 border-0 shadow-sm">
+        <article className={`card mb-3 border-0 shadow-sm ${!isFullPage ? 'cursor-pointer post-hover' : ''}`} 
+            onClick={goToPost}
+            style={{ cursor: isFullPage ? 'default' : 'pointer' }}>
             <div className="card-body">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                     <div className="d-flex gap-2">
@@ -134,44 +146,27 @@ const Post = ({ post, onDelete, onUpdate }) => {
                         )}
                     </div>
                 )}
-
-                {/* Botões de Ação */}
+                <div className="text-secondary small mb-2">
+                    {dataFormatada}
+                </div>
                 <div className="d-flex gap-4 text-muted border-top pt-2">
-                    <button onClick={carregarComentarios} className="btn btn-sm border-0 text-muted d-flex align-items-center gap-1">
-                        💬 <span>{totalComentarios}</span>
+                    <button 
+                        className="btn btn-sm border-0 text-muted d-flex align-items-center gap-1"
+                        onClick={(e) => {
+                            if(!isFullPage) {
+                                e.stopPropagation();
+                                navigate(`/posts/${post.id}`);
+                            }
+                        }}
+                    >
+                        💬 <span>{post.total_comentarios}</span>
                     </button>
                     <button onClick={toggleLike} className={`btn btn-sm border-0 d-flex align-items-center gap-1 ${curtido ? 'text-danger' : 'text-muted'}`}>
-                        {curtido ? '❤' : '♡'} <span>{likes}</span>
+                        {curtido ? <FaHeart /> : <FaRegHeart />} <span>{likes}</span>
                     </button>
                 </div>
 
-                {/* Área de Comentários */}
-                {mostrarComentarios && (
-                    <div className="mt-3 pt-3 border-top">
-                        <form onSubmit={enviarComentario} className="d-flex gap-2 mb-3">
-                            <input 
-                                className="form-control form-control-sm rounded-pill" 
-                                placeholder="Postar sua resposta" 
-                                value={textoComentario}
-                                onChange={e => setTextoComentario(e.target.value)}
-                            />
-                            <button className="btn btn-sm btn-primary rounded-pill" disabled={!textoComentario.trim()}>Responder</button>
-                        </form>
-                        
-                        <div className="d-flex flex-column gap-2">
-                            {listaComentarios.map(c => (
-                                <Comentario 
-                                    key={c.id} 
-                                    comentario={c} 
-                                    onDelete={(id) => {
-                                        setListaComentarios(prev => prev.filter(x => x.id !== id));
-                                        setTotalComentarios(prev => prev - 1);
-                                    }} 
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                
             </div>
             <DenunciaModal 
                 show={showDenuncia} 
