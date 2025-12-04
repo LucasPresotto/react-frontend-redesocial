@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://LucasPresotto.github.io/react-frontend-redesocial",
+  "homepage": "https://LucasPresotto.github.io/react-frontend-redesocial/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

@@ -43,7 +43,9 @@ const router = createBrowserRouter([
             { path: "/posts/:id", element: <PaginaPost /> },
         ]
     }
-]);
+], { 
+    basename: "/react-frontend-redesocial" 
+});
 
 createRoot(document.getElementById('root')).render(
     <AuthProvider>
