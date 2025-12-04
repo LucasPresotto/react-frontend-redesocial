@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const UsuariosFormRegister = ({ setToastInfo }) => {
     const [nome, setNome] = useState("");
     const [usuario, setUsuario] = useState("");
@@ -22,7 +24,7 @@ const UsuariosFormRegister = ({ setToastInfo }) => {
             formData.append("foto_perfil", arquivo); 
         }
         try {
-            const res = await fetch("http://localhost:3000/api/usuarios/register", {
+            const res = await fetch(`${API_BASE_URL}/api/usuarios/register`, {
                 method: "POST",
                 credentials: "include",
                 body: formData,

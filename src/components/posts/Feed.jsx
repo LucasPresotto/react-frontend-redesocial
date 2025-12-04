@@ -4,6 +4,8 @@ import Post from "./Post";
 import NovoPost from "./NovoPost";
 import SugestoesSeguir from "../usuarios/SugestoesSeguir";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const Feed = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -19,7 +21,7 @@ const Feed = () => {
         try {
             if (reset) setPosts([]);
 
-            let url = `http://localhost:3000/api/posts?page=${pagina}&limit=10`;
+            let url = `${API_BASE_URL}/api/posts?page=${pagina}&limit=10`;
             if (tipo === 'following') {
                 url += `&feed_type=following`;
             }

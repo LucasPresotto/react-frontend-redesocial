@@ -5,6 +5,8 @@ import { useAuthFetch } from "../../hooks/useAuthFetch";
 import DenunciaModal from "../DenunciaModal";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const Comentario = ({ comentario, onDelete }) => {
     const user = useCurrentUser()();
     const authFetch = useAuthFetch();
@@ -17,7 +19,7 @@ const Comentario = ({ comentario, onDelete }) => {
     const isDono = user?.sub === comentario.Usuario_id || user?.papel === 1;
 
     const handleUpdate = async () => {
-        const res = await authFetch(`http://localhost:3000/api/comentarios/${comentario.id}`, {
+        const res = await authFetch(`${API_BASE_URL}/api/comentarios/${comentario.id}`, {
             method: "PUT", 
             body: JSON.stringify({ conteudo: texto })
         });
@@ -26,7 +28,7 @@ const Comentario = ({ comentario, onDelete }) => {
 
     const handleDelete = async () => {
         if(!confirm("Apagar comentário?")) return;
-        const res = await authFetch(`http://localhost:3000/api/comentarios/${comentario.id}`, { method: "DELETE" });
+        const res = await authFetch(`${API_BASE_URL}/api/comentarios/${comentario.id}`, { method: "DELETE" });
         if(res.ok) onDelete(comentario.id);
     };
 
@@ -36,7 +38,7 @@ const Comentario = ({ comentario, onDelete }) => {
         setLikes(prev => curtido ? prev - 1 : prev + 1);
 
         try {
-            const res = await authFetch(`http://localhost:3000/api/likes/comentarios/${comentario.id}`, { method });
+            const res = await authFetch(`${API_BASE_URL}/api/likes/comentarios/${comentario.id}`, { method });
             if (!res.ok) {
                 setCurtido(curtido);
                 setLikes(prev => curtido ? prev + 1 : prev - 1);

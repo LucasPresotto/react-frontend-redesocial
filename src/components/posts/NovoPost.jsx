@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useAuthFetch } from "../../hooks/useAuthFetch";
 import Toast from "../../components/Toast";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const NovoPost = ({ onPostCreated }) => {
     const [texto, setTexto] = useState("");
     const [arquivo, setArquivo] = useState(null);
@@ -30,7 +32,7 @@ const NovoPost = ({ onPostCreated }) => {
         if (arquivo) formData.append("arquivo", arquivo);
 
         try {
-            const res = await authFetch("http://localhost:3000/api/posts", {
+            const res = await authFetch(`${API_BASE_URL}/api/posts`, {
                 method: "POST",
                 body: formData, 
             });

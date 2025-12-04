@@ -8,6 +8,8 @@ import ListaUsuariosModal from "../../components/usuarios/ListaUsuariosModal";
 import { useNavigate } from "react-router-dom";
 import DenunciaModal from "../../components/DenunciaModal";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const Perfil = () => {
     const { id } = useParams(); 
     const userLogado = useCurrentUser()();
@@ -29,7 +31,7 @@ const Perfil = () => {
     useEffect(() => {
         async function loadPerfil() {
             try {
-                const res = await authFetch(`http://localhost:3000/api/usuarios/perfil/${usuarioId}`);
+                const res = await authFetch(`${API_BASE_URL}/api/usuarios/perfil/${usuarioId}`);
                 if (res.ok) {
                     const data = await res.json();
                     setPerfil(data);
@@ -42,7 +44,7 @@ const Perfil = () => {
 
     useEffect(() => {
         async function loadPosts() {
-            let url = `http://localhost:3000/api/posts?`;
+            let url = `${API_BASE_URL}/api/posts?`;
             
             if (filtro === 'curtidas') {
                 url += `liked_by=${usuarioId}`;
@@ -60,7 +62,7 @@ const Perfil = () => {
     }, [usuarioId, filtro]);
 
     const handleFollow = async () => {
-        const url = `http://localhost:3000/api/seguidores/${usuarioId}`;
+        const url = `${API_BASE_URL}/api/seguidores/${usuarioId}`;
         const method = seguindo ? "DELETE" : "POST";
         const res = await authFetch(url, { method });
         if(res.ok) {
@@ -74,7 +76,7 @@ const Perfil = () => {
 
     const abrirLista = async (tipo) => {
         try {
-            const res = await authFetch(`http://localhost:3000/api/seguidores/${usuarioId}/${tipo}`);
+            const res = await authFetch(`${API_BASE_URL}/api/seguidores/${usuarioId}/${tipo}`);
             if (res.ok) {
                 setUsuariosLista(await res.json());
                 setTipoLista(tipo === "seguidores" ? "Seguidores" : "Seguindo");
@@ -89,7 +91,7 @@ const Perfil = () => {
         if (!confirm(`ATENÇÃO: Como Administrador, você está prestes a excluir permanentemente o usuário @${perfil.usuario} e todos os seus dados. Continuar?`)) return;
 
         try {
-            const res = await authFetch(`http://localhost:3000/api/usuarios/admin/${perfil.id}`, {
+            const res = await authFetch(`${API_BASE_URL}/api/usuarios/admin/${perfil.id}`, {
                 method: "DELETE"
             });
             if (res.ok) {

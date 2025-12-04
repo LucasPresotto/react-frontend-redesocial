@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../hooks/AuthContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const UsuariosFormLogin = ({ setToastInfo }) => {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
@@ -12,7 +14,7 @@ const UsuariosFormLogin = ({ setToastInfo }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("http://localhost:3000/api/usuarios/login", {
+            const res = await fetch(`${API_BASE_URL}/api/usuarios/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

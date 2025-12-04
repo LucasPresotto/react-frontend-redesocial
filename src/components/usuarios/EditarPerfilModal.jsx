@@ -14,10 +14,12 @@ const EditarPerfilModal = ({ show, handleClose, perfil, onUpdate }) => {
     const authFetch = useAuthFetch();
     const { updateUser } = useAuth();
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
     const handleSave = async () => {
         setLoading(true);
         try {
-            const resTexto = await authFetch("http://localhost:3000/api/usuarios/me", {
+            const resTexto = await authFetch(`${API_BASE_URL}/api/usuarios/me`, {
                 method: "PATCH",
                 body: JSON.stringify({ nome, bio }),
             });
@@ -26,7 +28,7 @@ const EditarPerfilModal = ({ show, handleClose, perfil, onUpdate }) => {
             if (foto) {
                 const formData = new FormData();
                 formData.append("foto_perfil", foto);
-                const resFoto = await authFetch("http://localhost:3000/api/usuarios/foto", {
+                const resFoto = await authFetch(`${API_BASE_URL}/api/usuarios/foto`, {
                     method: "POST",
                     body: formData, 
                 });
@@ -34,7 +36,7 @@ const EditarPerfilModal = ({ show, handleClose, perfil, onUpdate }) => {
                 dadosAtualizados = { ...dadosAtualizados, ...dadosFoto };
             }
 
-            const refreshRes = await fetch("http://localhost:3000/api/usuarios/refresh", {
+            const refreshRes = await fetch(`${API_BASE_URL}/api/usuarios/refresh`, {
                 method: "POST",
                 credentials: "include" 
             });

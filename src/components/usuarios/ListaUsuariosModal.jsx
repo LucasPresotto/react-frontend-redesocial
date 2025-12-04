@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useAuthFetch } from "../../hooks/useAuthFetch";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const ItemUsuario = ({ u, onClose }) => {
     const user = useCurrentUser()();
     const authFetch = useAuthFetch();
@@ -15,7 +17,7 @@ const ItemUsuario = ({ u, onClose }) => {
         e.stopPropagation();
         
         const method = seguindo ? "DELETE" : "POST";
-        const res = await authFetch(`http://localhost:3000/api/seguidores/${u.id}`, { method });
+        const res = await authFetch(`${API_BASE_URL}/api/seguidores/${u.id}`, { method });
         if(res.ok) setSeguindo(!seguindo);
     };
 

@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuthFetch } from "../../hooks/useAuthFetch";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const SugestoesSeguir = () => {
     const [usuarios, setUsuarios] = useState([]);
     const authFetch = useAuthFetch();
 
     useEffect(() => {
-        authFetch("http://localhost:3000/api/usuarios/sugestoes")
+        authFetch(`${API_BASE_URL}/api/usuarios/sugestoes`)
             .then(res => res.ok ? res.json() : [])
             .then(data => setUsuarios(data))
             .catch(console.error);

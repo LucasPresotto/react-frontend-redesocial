@@ -12,6 +12,8 @@ import { IoMdMenu } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa6";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const Navbar = () => {
     const authFetch = useAuthFetch();
     const navigate = useNavigate();
@@ -23,7 +25,7 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         try {
-            await authFetch("http://localhost:3000/api/usuarios/logout", { method: "POST" });
+            await authFetch(`${API_BASE_URL}/api/usuarios/logout`, { method: "POST" });
             logout();
             navigate("/usuarios/login");
         } catch (error) {
@@ -33,7 +35,7 @@ const Navbar = () => {
 
     const handleDeleteAccount = async () => {
         try {
-            const res = await authFetch("http://localhost:3000/api/usuarios/me", { method: "DELETE" });
+            const res = await authFetch(`${API_BASE_URL}/api/usuarios/me`, { method: "DELETE" });
             if (res.ok) {
                 sessionStorage.removeItem("at");
                 alert("Conta excluída com sucesso.");

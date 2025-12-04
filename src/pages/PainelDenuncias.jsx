@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAuthFetch } from "../hooks/useAuthFetch";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const PainelDenuncias = () => {
     const [denuncias, setDenuncias] = useState([]);
     const authFetch = useAuthFetch();
 
     const carregarDenuncias = async () => {
         try {
-            const res = await authFetch("http://localhost:3000/api/denuncias");
+            const res = await authFetch(`${API_BASE_URL}/api/denuncias`);
             if (res.ok) setDenuncias(await res.json());
         } catch (error) {
             console.error(error);
@@ -22,9 +24,9 @@ const PainelDenuncias = () => {
         if (!confirm("Tem certeza? Isso apagará o conteúdo denunciado.")) return;
         
         let url = "";
-        if (d.target_post_id) url = `http://localhost:3000/api/posts/${d.target_post_id}`;
-        else if (d.target_comentario_id) url = `http://localhost:3000/api/comentarios/${d.target_comentario_id}`;
-        else if (d.target_usuario_id) url = `http://localhost:3000/api/usuarios/admin/${d.target_usuario_id}`;
+        if (d.target_post_id) url = `${API_BASE_URL}/api/posts/${d.target_post_id}`;
+        else if (d.target_comentario_id) url = `${API_BASE_URL}/api/comentarios/${d.target_comentario_id}`;
+        else if (d.target_usuario_id) url = `${API_BASE_URL}/api/usuarios/admin/${d.target_usuario_id}`;
 
         try {
             const res = await authFetch(url, { method: "DELETE" });
@@ -41,7 +43,7 @@ const PainelDenuncias = () => {
     const handleDescartar = async (id) => {
         if (!confirm("Descartar esta denúncia?")) return;
         try {
-            await authFetch(`http://localhost:3000/api/denuncias/${id}`, { method: "DELETE" });
+            await authFetch(`${API_BASE_URL}/api/denuncias/${id}`, { method: "DELETE" });
             setDenuncias(denuncias.filter(x => x.id !== id));
         } catch (err) { console.error(err); }
     };

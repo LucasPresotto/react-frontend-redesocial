@@ -3,6 +3,8 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useAuthFetch } from "../hooks/useAuthFetch";
 import Toast from "./Toast";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const DenunciaModal = ({ show, handleClose, alvo }) => {
     const [motivo, setMotivo] = useState("");
     const [toastInfo, setToastInfo] = useState(null);
@@ -22,7 +24,7 @@ const DenunciaModal = ({ show, handleClose, alvo }) => {
         };
 
         try {
-            const res = await authFetch("http://localhost:3000/api/denuncias", {
+            const res = await authFetch(`${API_BASE_URL}/api/denuncias`, {
                 method: "POST",
                 body: JSON.stringify(payload)
             });

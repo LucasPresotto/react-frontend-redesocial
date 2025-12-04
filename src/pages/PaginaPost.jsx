@@ -6,6 +6,8 @@ import Post from "../components/posts/Post";
 import Comentario from "../components/posts/Comentario";
 import Navbar from "../components/Navbar"; 
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const PaginaPost = () => {
     const { id } = useParams();
     const user = useCurrentUser()();
@@ -19,11 +21,11 @@ const PaginaPost = () => {
     useEffect(() => {
         async function loadData() {
             try {
-                const resPost = await authFetch(`http://localhost:3000/api/posts/${id}`);
+                const resPost = await authFetch(`${API_BASE_URL}/api/posts/${id}`);
                 if (!resPost.ok) return; 
                 const dadosPost = await resPost.json();
                 
-                const resCom = await authFetch(`http://localhost:3000/api/posts/${id}/comentarios`);
+                const resCom = await authFetch(`${API_BASE_URL}/api/posts/${id}/comentarios`);
                 const dadosCom = resCom.ok ? await resCom.json() : [];
                 
                 setPost(dadosPost);
@@ -41,7 +43,7 @@ const PaginaPost = () => {
         e.preventDefault();
         if(!novoComentario.trim()) return;
 
-        const res = await authFetch("http://localhost:3000/api/comentarios", {
+        const res = await authFetch(`${API_BASE_URL}/api/comentarios`, {
             method: "POST",
             body: JSON.stringify({ post_id: id, conteudo: novoComentario })
         });

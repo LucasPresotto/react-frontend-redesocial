@@ -6,6 +6,8 @@ import Comentario from "./Comentario";
 import DenunciaModal from "../DenunciaModal";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
     const user = useCurrentUser()();
     const authFetch = useAuthFetch();
@@ -26,7 +28,7 @@ const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
 
     const toggleLike = async () => {
         const method = curtido ? "DELETE" : "POST";
-        const res = await authFetch(`http://localhost:3000/api/likes/posts/${post.id}`, { method });
+        const res = await authFetch(`${API_BASE_URL}/api/likes/posts/${post.id}`, { method });
         if (res.ok) {
             setCurtido(!curtido);
             setLikes(prev => curtido ? prev - 1 : prev + 1);
@@ -35,7 +37,7 @@ const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
 
     const carregarComentarios = async () => {
         if (!mostrarComentarios) {
-            const res = await authFetch(`http://localhost:3000/api/posts/${post.id}/comentarios`);
+            const res = await authFetch(`${API_BASE_URL}/api/posts/${post.id}/comentarios`);
             if (res.ok) {
                 setListaComentarios(await res.json());
             }
@@ -47,7 +49,7 @@ const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
         e.preventDefault();
         if(!textoComentario.trim()) return;
 
-        const res = await authFetch("http://localhost:3000/api/comentarios", {
+        const res = await authFetch(`${API_BASE_URL}/api/comentarios`, {
             method: "POST",
             body: JSON.stringify({ post_id: post.id, conteudo: textoComentario })
         });
@@ -66,7 +68,7 @@ const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
     };
 
     const handleUpdate = async () => {
-        const res = await authFetch(`http://localhost:3000/api/posts/${post.id}`, {
+        const res = await authFetch(`${API_BASE_URL}/api/posts/${post.id}`, {
             method: "PATCH",
             body: JSON.stringify({ conteudo: novoConteudo })
         });
@@ -78,7 +80,7 @@ const Post = ({ post, onDelete, onUpdate, isFullPage = false }) => {
 
     const handleDelete = async () => {
         if(!confirm("Tem certeza?")) return;
-        const res = await authFetch(`http://localhost:3000/api/posts/${post.id}`, { method: "DELETE" });
+        const res = await authFetch(`${API_BASE_URL}/api/posts/${post.id}`, { method: "DELETE" });
         if (res.ok) onDelete(post.id);
     };
 

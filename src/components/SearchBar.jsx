@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useAuthFetch } from "../hooks/useAuthFetch";
 import { CiSearch } from "react-icons/ci";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
 const SearchBar = () => {
     const [query, setQuery] = useState("");
     const [resultados, setResultados] = useState([]);
@@ -15,7 +17,7 @@ const SearchBar = () => {
                 return;
             }
             try {
-                const res = await authFetch(`http://localhost:3000/api/usuarios/search?q=${query}`);
+                const res = await authFetch(`${API_BASE_URL}/api/usuarios/search?q=${query}`);
                 if (res.ok) setResultados(await res.json());
             } catch (err) { console.error(err); }
         }, 300); 
