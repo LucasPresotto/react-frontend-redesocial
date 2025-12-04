@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-const BACKEND_URL = "https://SEU-APP-NO-RENDER.onrender.com"; 
+const BACKEND_URL = "https://desenvolvimento-web-2025-5vis.onrender.com"; 
 
 const csp = [
   "default-src 'none'",
